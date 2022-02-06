@@ -1,0 +1,51 @@
+#<KvLang>
+
+#:kivy 1.0.9
+
+
+
+<MainScreen>:
+    GridLayout:
+        rows: 2
+        padding: 20
+        GridLayout:
+            cols: 2
+            padding: 5
+                
+            GridLayout:
+                rows: 2
+                Label:
+                    text: 'Polski'
+                TextInput:
+                    id: input
+                    focus: True
+                    on_text: root.update(self.text)
+            GridLayout:
+                rows: 2
+                Label:
+                    text: 'Kosmitowy'
+                TextInput:
+                    id: output
+
+        GridLayout:
+            rows: 1
+            height: 10 
+            Button:
+                height: 10
+                size: 20, 20
+                text: 'Dodaj słowo'
+                on_press: root.manager.current = 'second'
+        
+    
+
+
+<SecondScreen>:
+    BoxLayout:
+        Button:
+            text: 'Go to menu'
+            on_press: root.manager.current = 'main'
+        Slider:
+            
+
+
+#</KvLang>
