@@ -11,10 +11,10 @@
         GridLayout:
             cols: 2
             padding: 5
-                
             GridLayout:
                 rows: 2
                 Label:
+                    size_hint: 0.2, 0.2
                     text: 'Polski'
                 TextInput:
                     id: input
@@ -23,28 +23,87 @@
             GridLayout:
                 rows: 2
                 Label:
+                    size_hint: 0.2, 0.2
                     text: 'Kosmitowy'
                 TextInput:
                     id: output
 
         GridLayout:
             rows: 1
-            height: 10 
+            size_hint: 0.2, 0.2
             Button:
-                height: 10
-                size: 20, 20
                 text: 'Dodaj słowo'
                 on_press: root.manager.current = 'second'
+            Button:
+                text: 'Słowniczek'
+                on_press: root.manager.current = 'third'
         
     
 
 
 <SecondScreen>:
-    BoxLayout:
-        Button:
-            text: 'Go to menu'
-            on_press: root.manager.current = 'main'
-        Slider:
+    GridLayout:
+        rows: 2
+        padding: 20
+        GridLayout:
+            cols: 2
+            padding: 5
+            GridLayout:
+                rows: 2
+                Label:
+                    size_hint: 0.2, 0.2
+                    text: 'Polski'
+                TextInput:
+                    id: input
+                    focus: True
+            GridLayout:
+                rows: 2
+                Label:
+                    size_hint: 0.2, 0.2
+                    text: 'Kosmitowy'
+                TextInput:
+                    id: output
+
+        GridLayout:
+            rows: 1
+            size_hint: 0.2, 0.2 
+            Button:
+                text: 'Zapisz'
+                on_press: root.save()
+            Button:
+                text: 'Tłumacz'
+                on_press: root.manager.current = 'main'
+            Button:
+                text: 'Słowniczek'
+                on_press: root.manager.current = 'third'
+
+<ThirdScreen>:
+    GridLayout:
+        id: grid
+        rows: 2
+        ScrollView:
+            id: view
+            Dict_elements:
+                id: dict_elements
+                row_default_height: 30
+                size_hint: 1, None
+                height: self.minimum_height
+        GridLayout:
+            rows: 1
+            size_hint: 0.2, 0.2 
+            Button:
+                text: 'Tłumacz'
+                on_press: root.manager.current = 'main'
+            Button:
+                text: 'Dodaj słowo'
+                on_press: root.manager.current = 'second'
+
+
+
+
+
+
+
             
 
 
