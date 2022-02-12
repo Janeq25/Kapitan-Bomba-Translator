@@ -6,8 +6,12 @@
 
 <MainScreen>:
     GridLayout:
-        rows: 2
+        rows: 3
         padding: 20
+        Button:
+            size_hint: 0.2, 0.2
+            text: 'Polski -> Kosmitowy' if root.translation_mode == 0 else 'Kosmitowy <- Polski'
+            on_press: root.switch_mode()
         GridLayout:
             cols: 2
             padding: 5
@@ -18,7 +22,9 @@
                     text: 'Polski'
                 TextInput:
                     id: input
-                    focus: True
+                    multiline: False
+                    focus: True if root.translation_mode == 0 else False
+                    disabled: True if root.translation_mode == 1 else False
                     on_text: root.update(self.text)
             GridLayout:
                 rows: 2
@@ -27,6 +33,10 @@
                     text: 'Kosmitowy'
                 TextInput:
                     id: output
+                    multiline: False
+                    focus: True if root.translation_mode == 1 else False
+                    disabled: True if root.translation_mode == 0 else False
+                    on_text: root.update(self.text)
 
         GridLayout:
             rows: 1
@@ -85,7 +95,7 @@
             id: view
             Dict_elements:
                 id: dict_elements
-                row_default_height: 30
+                row_default_height: 50
                 size_hint: 1, None
                 height: self.minimum_height
         GridLayout:
