@@ -6,7 +6,7 @@ from kivy.uix.label import Label
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 from kivy.metrics import dp
-from kivy.properties import NumericProperty
+from kivy.properties import NumericProperty, ListProperty
 from kivy.uix.textinput import TextInput
 
 
@@ -89,15 +89,36 @@ def find_matching_values(maching_keys):
                 return maching_values
     return maching_values
 
+def find_matching_entries(searches):
+    global dictionary
+
+    maching_entries = []
+    for entry in dictionary:
+        for j, search in enumerate(searches):
+            if entry[0] == search or entry[1] == search:
+                maching_entries.append(entry)
+                del searches[j]
+            if len(searches) <= 0:
+                return maching_entries
+    return maching_entries
+
+def find_matching_entries_index(search):
+    global dictionary
+
+    for i, entry in enumerate(dictionary):
+        if entry[0] == search or entry[1] == search:
+            return i
 
 
 
 load_dictionary()
 
 
-
 class MainScreen(Screen):
     translation_mode = NumericProperty(0)
+
+    input = ListProperty([''])
+    output = ListProperty([''])
 
     def __init__(self, **kw):
         super().__init__(**kw)
@@ -108,6 +129,44 @@ class MainScreen(Screen):
             
         elif self.translation_mode == 1:
             self.translation_mode = 0
+
+    def output_sugestion_pressed(self, obj):
+        print(obj.text)
+
+        #add one to selected entries score
+
+        #print(find_matching_entries([obj.text]))
+        dictionary[find_matching_entries_index(obj.text)][2] += 1
+
+        #replace last translated word with selected one
+        #self.ids[input].text = self.ids[input].text.replace(self.ids[input].text.split(' ')[-1], obj.text)
+        # translation = self.ids['input'].text.split(' ')
+        # translation[-2] = obj.text
+        # self.ids['input'].text = ' '.join(translation)
+
+        self.output[-1] = obj.text
+
+        self.ids['output_window'].text = ' '.join(self.output)
+
+    def input_sugestion_pressed(self, obj):
+        print(obj.text)
+
+        #add one to selected entries score
+
+        #print(find_matching_entries([obj.text]))
+        dictionary[find_matching_entries_index(obj.text)][2] += 1
+
+        #replace last translated word with selected one
+        #self.ids[input].text = self.ids[input].text.replace(self.ids[input].text.split(' ')[-1], obj.text)
+        # translation = self.ids['input'].text.split(' ')
+        # translation[-2] = obj.text
+        # self.ids['input'].text = ' '.join(translation)
+
+        self.input[-1] = obj.text
+
+        self.ids['input_window'].text = ' '.join(self.input)
+
+    
 
     def translate(self, *args):
         #he he
@@ -129,71 +188,122 @@ class MainScreen(Screen):
         potem wiedząc, że listy keys i values są w takiej samej kolejności, czyli key[0] to polskie tłumaczenie value[0],
         tworzymy listę znalezionych tłumaczeń
         pierwszy element tej listy zostaje wpisany do okienka z tłumaczeniem
+
+        he he
+
+        tak było dwa dni temu
+        teraz
+        nie wiem nawet mniej
+        znaczy więcej
+
+        dodałem sugestie dla obu języków
+        wyświetlają się po trzy nad polami do wpisywania tekstu
+
+        jak sie jakąś wybierze, to do oceny? (score) danego tłumaczenia
+        zostaje dodana jedynka
+
+        tłumaczenie z większym wynikiem pojawia się wyżej
         '''
 
+        #print(self.input)
+        #print(self.output)
+
         if self.translation_mode == 0:
-            text = self.ids['input'].text
-            words = text.split(' ')
+            word = self.ids['input_window'].text.split(' ')[-1]
             out = ''
             #print(words)
-            for word in words:
-                matching_keys = get_close_matches(word, keys) #list of potential key candidates
-                matching_values = find_matching_values(matching_keys)
+            matching_keys = get_close_matches(word, keys) #list of potential key candidates
+            #print(word, matching_keys)
+            maching_entries = find_matching_entries(matching_keys)
 
-                #print(matching_values)
+            maching_entries.sort(key=lambda x : x[2], reverse=True)
 
-                if matching_values:
-                    if len(matching_values) > 1:
-                        self.ids['input1'].text = matching_values[1]
-                    else:
-                        self.ids['input1'].text = ''
-                    if len(matching_values) > 2:
-                        self.ids['input2'].text = matching_values[2]
-                    else:
-                        self.ids['input2'].text = ''
-                    if len(matching_values) > 3:
-                        self.ids['input3'].text = matching_values[3]
-                    else:
-                        self.ids['input3'].text = ''
+            matching_values = [entry[1] for entry in maching_entries]
 
-                    out += matching_values[0] + ' '
-                else:
-                    out += word + ' '
+            #print(maching_entries)
+            
+            if len(matching_values) > 1:
+                self.ids['input1'].text = matching_values[1]
+            else:
+                self.ids['input1'].text = ''
+            if len(matching_values) > 2:
+                self.ids['input2'].text = matching_values[2]
+            else:
+                self.ids['input2'].text = ''
+            if len(matching_values) > 3:
+                self.ids['input3'].text = matching_values[3]
+            else:
+                self.ids['input3'].text = ''
 
-            self.ids.output.text = out
+            if matching_values:
+                out = matching_values[0]
+            else:
+                out = word
+
+            #self.output.append(out)
+            # if len(self.output) == len(self.ids['input_window'].text.split(' ')):
+            #     self.output[-1] = out
+            #     self.input[-1] = word
+            # elif len(self.output) > len(self.ids['input_window'].text.split(' ')):
+            #     self.output.pop(-1)
+            #     self.input.pop(-1)
+            # elif len():
+            #     self.output.append(out)
+            #     self.input.append(word)
+
+            if len(self.ids['input_window'].text.split(' ')) > len(self.output):
+                self.output.append(out)
+                self.input.append(word)
+            elif len(self.ids['input_window'].text.split(' ')) == len(self.output):
+                self.output[-1] = out
+                self.input[-1] = word
+            elif len(self.ids['input_window'].text.split(' ')) < len(self.output):
+                self.output.pop(-1)
+                self.input.pop(-1)
+
+            self.ids['output_window'].text = ' '.join(self.output)
 
         elif self.translation_mode == 1:
-            text = self.ids['output'].text
-            words = text.split(' ')
+            word = self.ids['output_window'].text.split(' ')[-1]
             out = ''
             #print(words)
-            for word in words:
-                matching_values = get_close_matches(word, values) #list of potential key candidates
-                matching_keys = find_matching_keys(matching_values)
- 
-                #print(matching_keys)
+            matching_values = get_close_matches(word, values) #list of potential key candidates
+            maching_entries = find_matching_entries(matching_values)
 
-                if matching_keys:
-                    if len(matching_keys) > 1:
-                        self.ids['output1'].text = matching_keys[1]
-                    else:
-                        self.ids['output1'].text = ''
-                    if len(matching_keys) > 2:
-                        self.ids['output2'].text = matching_keys[2]
-                    else:
-                        self.ids['output2'].text = ''
-                    if len(matching_keys) > 3:
-                        self.ids['output3'].text = matching_keys[3]
-                    else:
-                        self.ids['output3'].text = ''
+            maching_entries.sort(key=lambda x : x[2], reverse=True)
 
-                    out += matching_keys[0] + ' '
-                else:
-                    out += word + ' '
+            matching_keys = [entry[0] for entry in maching_entries]
 
-            self.ids.input.text = out
+            
+            if len(matching_keys) > 1:
+                self.ids['output1'].text = matching_keys[1]
+            else:
+                self.ids['output1'].text = ''
+            if len(matching_keys) > 2:
+                self.ids['output2'].text = matching_keys[2]
+            else:
+                self.ids['output2'].text = ''
+            if len(matching_keys) > 3:
+                self.ids['output3'].text = matching_keys[3]
+            else:
+                self.ids['output3'].text = ''
 
+            if matching_keys:
+                out += matching_keys[0]
+            else:
+                out += word
 
+            if len(self.ids['output_window'].text.split(' ')) > len(self.input):
+                self.output.append(word)
+                self.input.append(out)
+            elif len(self.ids['output_window'].text.split(' ')) == len(self.input):
+                self.output[-1] = word
+                self.input[-1] = out
+            elif len(self.ids['output_window'].text.split(' ')) < len(self.input):
+                self.output.pop(-1)
+                self.input.pop(-1)
+
+            self.ids['input_window'].text = ' '.join(self.input)
 
 
 class SecondScreen(Screen):
@@ -230,7 +340,7 @@ class ThirdScreen(Screen):
 class Dict_elements(GridLayout):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.cols = 3
+        self.cols = 4
         #self.orientation = 'vertical'
         #self.size_hint = (1, None)
         #self.height = self.minimum_height
@@ -240,17 +350,19 @@ class Dict_elements(GridLayout):
         load_dictionary()
         self.clear_widgets()
 
-        for i, key in enumerate(keys):
+        for entry in dictionary:
 
             b = Button(text='usuń', padding=(10, 10))
             #b.on_press = self.remove, args=entry
             b.bind(on_press=self.remove)
-            self.ids[key + '_' + values[i] + '_btn'] = b
+            self.ids[entry[0] + '_' + entry[1] + '_btn'] = b
 
-            l = Label(text=key)
-            l2 = Label(text=values[i])
+            l = Label(text=entry[0])
+            l2 = Label(text=entry[1])
+            l3 = Label(text=str(entry[2]))
             self.add_widget(l)
             self.add_widget(l2)
+            self.add_widget(l3)
             self.add_widget(b)
 
     def remove(self, instance):
