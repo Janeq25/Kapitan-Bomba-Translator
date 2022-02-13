@@ -144,7 +144,7 @@ class MainScreen(Screen):
         # translation[-2] = obj.text
         # self.ids['input'].text = ' '.join(translation)
 
-        self.output[-1] = obj.text
+        self.output[-1] = obj.text + ' '
 
         self.ids['output_window'].text = ' '.join(self.output)
 
@@ -162,7 +162,7 @@ class MainScreen(Screen):
         # translation[-2] = obj.text
         # self.ids['input'].text = ' '.join(translation)
 
-        self.input[-1] = obj.text
+        self.input[-1] = obj.text + ' '
 
         self.ids['input_window'].text = ' '.join(self.input)
 

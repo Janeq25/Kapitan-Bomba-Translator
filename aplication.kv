@@ -16,27 +16,59 @@
             cols: 2
             padding: 5
             GridLayout:
-                rows: 2
+                rows: 3
                 Label:
                     size_hint: 0.2, 0.2
                     text: 'Polski'
+                GridLayout:
+                    cols: 3
+                    size_hint: 0.2, 0.2
+                    Button:
+                        id: input1
+                        disabled: True if self.text == '' else False
+                        on_press: root.output_sugestion_pressed(self)
+                    Button:
+                        id: input2
+                        disabled: True if self.text == '' else False
+                        on_press: root.output_sugestion_pressed(self)
+                    Button:
+                        id: input3
+                        disabled: True if self.text == '' else False
+                        on_press: root.output_sugestion_pressed(self)
                 TextInput:
-                    id: input
+                    id: input_window
                     multiline: False
                     focus: True if root.translation_mode == 0 else False
                     disabled: True if root.translation_mode == 1 else False
-                    on_text: root.update(self.text)
+                    #on_text: root.translate(self.text) if root.translation_mode == 0 else None
+                    keyboard_on_key_up: root.translate
             GridLayout:
-                rows: 2
+                rows: 3
                 Label:
                     size_hint: 0.2, 0.2
                     text: 'Kosmitowy'
+                GridLayout:
+                    cols: 3
+                    size_hint: 0.2, 0.2
+                    Button:
+                        id: output1
+                        disabled: True if self.text == '' else False
+                        on_press: root.input_sugestion_pressed(self)
+                    Button:
+                        id: output2
+                        disabled: True if self.text == '' else False
+                        on_press: root.input_sugestion_pressed(self)
+                    Button:
+                        id: output3
+                        disabled: True if self.text == '' else False
+                        on_press: root.input_sugestion_pressed(self)
                 TextInput:
-                    id: output
+                    id: output_window
                     multiline: False
                     focus: True if root.translation_mode == 1 else False
                     disabled: True if root.translation_mode == 0 else False
-                    on_text: root.update(self.text)
+                    #on_text: root.translate(self.text) if root.translation_mode == 1 else None
+                    keyboard_on_key_up: root.translate
 
         GridLayout:
             rows: 1
@@ -66,6 +98,7 @@
                 TextInput:
                     id: input
                     focus: True
+                    input_filter: lambda x,y : x.replace(' ', '_')
             GridLayout:
                 rows: 2
                 Label:
@@ -73,6 +106,7 @@
                     text: 'Kosmitowy'
                 TextInput:
                     id: output
+                    input_filter: lambda x,y : x.replace(' ', '_')
 
         GridLayout:
             rows: 1
@@ -95,7 +129,7 @@
             id: view
             Dict_elements:
                 id: dict_elements
-                row_default_height: 50
+                row_default_height: '40dp'
                 size_hint: 1, None
                 height: self.minimum_height
         GridLayout:
